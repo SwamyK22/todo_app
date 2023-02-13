@@ -1,37 +1,85 @@
-import React, { Component } from 'react';
+import React, { createRef, PureComponent } from 'react';
 import './style.scss';
 import './todo.scss';
+import TodoFilter from './todoFilter';
+import TodoForm from './todoForm';
+import TodoList from './todoList';
 
-// eslint-disable-next-line react/prefer-stateless-function
-export default class app extends Component {
+export default class app extends PureComponent {
+  state = {
+    todoList: [],
+    filterStatus: 'all',
+  };
+
+  todoTextRef = createRef();
+
+  addTodo = (event) => {
+    event.preventDefault();
+
+    // O(logN)
+    // const todoTextEle = document.getElementById('todoText');
+    // O(1)
+
+    // async code
+    this.setState(({ todoList }) => ({
+      todoList: [...todoList,
+        { id: new Date().valueOf(), isDone: false, text: this.todoTextRef.current.value }],
+    }), () => {
+      this.todoTextRef.current.value = '';
+    });
+  };
+
+  updateTodo = (item) => {
+    this.setState(({ todoList }) => {
+      const index = todoList.findIndex((x) => x.id === item.id);
+      return {
+        todoList: [
+          ...todoList.slice(0, index),
+          { ...item, isDone: !item.isDone },
+          ...todoList.slice(index + 1),
+        ],
+      };
+    });
+  };
+
+  deleteTodo = (item) => {
+    const isConfirm = confirm('Are you sure to delete this item');
+
+    if (isConfirm) {
+      this.setState(({ todoList }) => {
+        const index = todoList.findIndex((x) => x.id === item.id);
+        return {
+          todoList: [
+            ...todoList.slice(0, index),
+            ...todoList.slice(index + 1),
+          ],
+        };
+      });
+    } else {
+      alert('Okay');
+    }
+  };
+
+  filterTodo = (filterStatus) => {
+    this.setState({ filterStatus });
+  };
+
   render() {
+    const { todoList, filterStatus } = this.state;
+    console.log('render');
     return (
       <div className="todo">
         <h1 className="todo__title">Todo App</h1>
-        <form className="todo__form">
-          <div>
-            <label htmlFor="todoText" className="sr-only">Todo Text</label>
-            <input type="text" id="todoText" className="rounded-l-md" />
-          </div>
-          <button type="submit" className="btn rounded-r-md">Add Todo</button>
-        </form>
+        <TodoForm addTodo={this.addTodo} ref={this.todoTextRef} />
         <div className="todo__list">
-          <div className="todo__list-item">
-            <input type="checkbox" />
-            <p className="px-5 flex-1">Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-            <button type="button" className="btn rounded-md">Delete</button>
-          </div>
-          <div className="todo__list-item">
-            <input type="checkbox" />
-            <p className="px-5 flex-1">Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-            <button type="button" className="btn rounded-md">Delete</button>
-          </div>
+         {todoList.length > 0 && <TodoList
+          todoList={todoList}
+          filterStatus={filterStatus}
+          updateTodo={this.updateTodo}
+          deleteTodo={this.deleteTodo}
+        />}
         </div>
-        <div className="todo__filter">
-          <button type="button" className="btn flex-1">All</button>
-          <button type="button" className="btn btn--active flex-1">Pending</button>
-          <button type="button" className="btn flex-1">Completed</button>
-        </div>
+        <TodoFilter filterStatus={filterStatus} filterTodo={this.filterTodo} />
       </div>
     );
   }

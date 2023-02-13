@@ -18,5 +18,12 @@ module.exports = {
     'react',
   ],
   rules: {
+    'jsx-a11y/label-has-associated-control': ['error', { assert: 'either' }],
+    'react/state-in-constructor': 0,
+    'no-restricted-globals': ['error', 'event'],
+    'no-alert': 'off',
+    'no-console': 'off',
+    'react/prop-types': 0,
+    "import/no-extraneous-dependencies": ["error", {"packageDir": path.join(__dirname, 'some-dir')}],
   },
 };

@@ -1,21 +1,16 @@
 import React from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import TodoListItem from './todoListItem';
 
 function TodoList({
-  todoList, filterStatus, updateTodo, deleteTodo,
+  todoList, filterStatus, updateTodo, deleteTodo, updateTodoState, deleteTodoState,
 }) {
-  console.log('Todo List render');
   return (
     <>
       {todoList.map((x) => {
-        if (filterStatus === 'all' || (filterStatus === 'pending' && x.isDone === false) || (filterStatus === 'completed' && x.isDone === true)) {
           return (
-            <TodoListItem item={x} updateTodo={updateTodo} deleteTodo={deleteTodo} key={x.id} />
+            <TodoListItem item={x} updateTodo={updateTodo} deleteTodo={deleteTodo} key={x.id} updateTodoState={updateTodoState.find((y)=> y.loadingId === x.id )} deleteTodoState={deleteTodoState.find((y)=> y.loadingId === x.id)} />
           );
-        }
-        return null;
       })}
       </>
   );
@@ -29,8 +24,19 @@ TodoList.prototypes = {
       isDone: PropTypes.bool.isRequired,
     }).isRequired,
   ).isRequired,
-  filterStatus: PropTypes.oneOf(['all', 'pending', 'completed']).isRequired,
   updateTodo: PropTypes.func.isRequired,
   deleteTodo: PropTypes.func.isRequired,
+  updateTodoState: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.oneOf(['UPDATE_TODO']).isRequired,
+      status: PropTypes.oneOf(['REQUEST', 'ERROR']).isRequired
+    })
+  ).isRequired,
+  deleteTodoState: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.oneOf(['DELETE_TODO']).isRequired,
+      status: PropTypes.oneOf(['REQUEST', 'ERROR']).isRequired
+    })
+  ).isRequired
 };
 export default TodoList;

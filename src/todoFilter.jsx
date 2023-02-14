@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { memo } from 'react';
 
 function TodoFilter({ filterStatus, filterTodo }) {
-  console.log('TodoFilter render');
   return (
     <div className="todo__filter">
       <button

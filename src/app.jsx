@@ -189,6 +189,10 @@ export default class app extends PureComponent {
       return <h1>{ laodTodoState.message }</h1>
     }
 
+    // if(todoList.length > 8){
+    //   throw new Error('Somthing went Wrong')
+    // }
+
     return (
       <div className="todo">
         <h1 className="todo__title">Todo App</h1>
